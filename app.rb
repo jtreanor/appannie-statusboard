@@ -9,6 +9,7 @@ get '/' do
 
   puts c.header_str
 
+  #Remove the last header. This is a cookie we don't need.
   headers = c.header_str.split(/[\r\n]+/)
   headers.delete_at(headers.length-1)
 
