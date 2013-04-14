@@ -1,14 +1,30 @@
-require 'sinatra'
-
 get '/' do
 
-  http = Curl.post("http://www.google.com/", {:foo => "bar"})
-  puts http.body_str
+  #http = Curl.post("http://www.google.com/", {:foo => "bar"})
+  #puts http.body_str
 
-  cookie = 'secure_sessionId=".eJxNzD0OwjAMQGG1_GwdYOUCTBFngAmhDgyeIzexhEXlNLEDYkBi5dYsHVif9L1P-87NHjZKqpxkoqKsRmK5_UI3V6-GxfLi0sDWY7Wbr0rFDxjuJDEv4fCkAQXHl3FQhyGkKuZOqHQWJVE2flCfIo3H2ayg-ztxzOt-d63uB9uTNLY:1URLng:xrmPFVQsJZJ3sZbgaRtCYNWqQGc"; Path=/; secure, sessionId=".eJxNzD0OwjAMQGG1_GwdYOUCTBFngAmhDgyeIzexhEXlNLEDYkBi5dYsHVif9L1P-87NHjZKqpxkoqKsRmK5_UI3V6-GxfLi0sDWY7Wbr0rFDxjuJDEv4fCkAQXHl3FQhyGkKuZOqHQWJVE2flCfIo3H2ayg-ztxzOt-d63uB9uTNLY:1URLng:ovz3fIhv7tw_EGPuGkr9jh2iZ8s"; Path=/';
+  c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
+                         Curl::PostField.content('username', 'jtreanor3@gmail.com'),
+                         Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
-  http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-01-01&e=2013-03-12') do|http|
+  puts c.header_str
+
+  headers = c.header_str.split(/[\r\n]+/)
+  headers.delete_at(headers.length-1)
+
+  http_response, *http_headers = headers.map(&:strip)
+  http_headers = Hash[http_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
+
+  puts Hirb::Helpers::AutoTable.render(http_headers)
+
+  cookie = http_headers['Set-Cookie'];
+
+  puts "Cookie: " + cookie
+
+  http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-01-01&e=2013-03-12') do |http|
     http.headers['Cookie'] = cookie
-end
+  end
+
   http.body_str
+
 end

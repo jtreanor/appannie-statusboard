@@ -1,6 +1,5 @@
-source :rubygems
+source 'https://rubygems.org'
 
-gem 'heroku'
 gem 'sinatra'
-gem 'thin'
 gem 'curb'
+gem 'hirb'
