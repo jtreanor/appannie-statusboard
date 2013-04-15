@@ -4,8 +4,8 @@ get '/' do
                          Curl::PostField.content('username', 'jtreanor3@gmail.com'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
-  puts c.header_str
-
+  c.header_str
+=begin
   #Remove the last header. This is a cookie we don't need.
   headers = c.header_str.split(/[\r\n]+/)
   headers.delete_at(headers.length-1)
@@ -23,9 +23,7 @@ get '/' do
       http.headers['Cookie'] = cookie
     end
 
-    http.body_str
 
-=begin
     data = http.body_str.split("--end-data--")
 
     datasequences = [];
@@ -42,8 +40,10 @@ get '/' do
 
     output.to_json
 
-=end
+
 
   end
+
+=end
 
 end
