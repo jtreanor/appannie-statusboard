@@ -4,8 +4,9 @@ get '/' do
                          Curl::PostField.content('username', 'jtreanor3@gmail.com'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
-  c.header_str
-=begin
+  echo = c.header_str
+
+  
   #Remove the last header. This is a cookie we don't need.
   headers = c.header_str.split(/[\r\n]+/)
   headers.delete_at(headers.length-1)
@@ -38,12 +39,12 @@ get '/' do
 
     output = { :graph => { :title => "Appannie Data", :datasequences => datasequences } }
 
-    output.to_json
+    echo = echo + output.to_json
 
 
 
   end
 
-=end
+  echo
 
 end
