@@ -23,8 +23,8 @@ get '/' do
       http.headers['Cookie'] = cookie
     end
 
-    http.header_str
-    
+    http.body_str
+
 =begin
     data = http.body_str.split("--end-data--")
 
