@@ -13,26 +13,32 @@ get '/' do
   http_response, *http_headers = headers.map(&:strip)
   http_headers = Hash[http_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
 
-  cookie = http_headers['Set-Cookie'];
+  if (http_headers['Set-Cookie'].nil?) {
+    "Something went wrong"
+  } else {
 
-  http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-03-04&e=2013-03-12') do |http|
-    http.headers['Cookie'] = cookie
-  end
+    cookie = http_headers['Set-Cookie'];
 
-  data = http.body_str.split("--end-data--")
-
-  datasequences = [];
-
-  JSON.parse(data.first).each do |app|
-    datapoints = []
-    app["data"].each do |d|
-      datapoints << { title: d.first, value: d[1]}
+    http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-03-04&e=2013-03-12') do |http|
+      http.headers['Cookie'] = cookie
     end
-    datasequences << { title: app["label"], datapoints: datapoints }
-  end
 
-  output = { graph: { title: "Appannie Data", datasequences: datasequences } }
+    data = http.body_str.split("--end-data--")
 
-  output.to_json
+    datasequences = [];
+
+    JSON.parse(data.first).each do |app|
+      datapoints = []
+      app["data"].each do |d|
+        datapoints << { :title => d.first, :value => d[1]}
+      end
+      datasequences << { :title => app["label"], :datapoints => datapoints }
+    end
+
+    output = { :graph => { :title => "Appannie Data", :datasequences => datasequences } }
+
+    output.to_json
+
+  }
 
 end
