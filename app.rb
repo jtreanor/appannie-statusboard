@@ -1,8 +1,5 @@
 get '/' do
 
-  #http = Curl.post("http://www.google.com/", {:foo => "bar"})
-  #puts http.body_str
-
   c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
                          Curl::PostField.content('username', 'jtreanor3@gmail.com'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
@@ -18,12 +15,24 @@ get '/' do
 
   cookie = http_headers['Set-Cookie'];
 
-  http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-01-01&e=2013-03-12') do |http|
+  http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-03-04&e=2013-03-12') do |http|
     http.headers['Cookie'] = cookie
   end
 
   data = http.body_str.split("--end-data--")
 
-  data.first
+  datasequences = [];
+
+  JSON.parse(data.first).each do |app|
+    datapoints = []
+    app["data"].each do |d|
+      datapoints << { title: d.first, value: d[1]}
+    end
+    datasequences << { title: app["label"], datapoints: datapoints }
+  end
+
+  output = { graph: { title: "Appannie Data", datasequences: datasequences } }
+
+  output.to_json
 
 end
