@@ -24,6 +24,7 @@ get '/' do
       http.headers['Cookie'] = cookie
     end
 
+    echo = echo + http.header_str
 
     data = http.body_str.split("--end-data--")
 
