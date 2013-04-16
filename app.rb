@@ -1,6 +1,10 @@
 get '/' do
 
-  c = Curl::Easy.new("https://www.appannie.com/account/login/",
+http = Curl.get("http://www.appannie.com/")
+http.header_str
+
+=begin
+  c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
                          Curl::PostField.content('username', 'j.treanor@umail.ucc.ie'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
@@ -42,6 +46,8 @@ get '/' do
 
 
   end
+
+=end
 
 
 end
