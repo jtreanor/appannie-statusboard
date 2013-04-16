@@ -14,7 +14,7 @@ get '/' do
   http_headers = Hash[http_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
 
   if http_headers['Set-Cookie'].nil?
-    "Something went wrong"
+    c.header_str
   else
 
     cookie = http_headers['Set-Cookie'];
