@@ -1,7 +1,7 @@
 get '/' do
 
   c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
-                         Curl::PostField.content('username', 'jtreanor3@gmail.com'),
+                         Curl::PostField.content('username', 'j.treanor@umail.ucc.ie'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
 #  echo = c.header_str
