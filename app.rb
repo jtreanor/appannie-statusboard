@@ -1,6 +1,6 @@
 get '/' do
 
-http = Curl.get("http://www.appannie.com/")
+http = Curl.get("http://www.appannie.com/account/login/")
 http.header_str
 
 =begin
