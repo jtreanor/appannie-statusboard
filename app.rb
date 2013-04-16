@@ -30,7 +30,8 @@ get '/' do
     JSON.parse(data.first).each do |app|
       datapoints = []
       app["data"].each do |d|
-        datapoints << { :title => d.first, :value => d[1]}
+        date = DateTime.strptime(d.first,'%s')
+        datapoints << { :title => date.strftime("%d %b"), :value => d[1]}
       end
       datasequences << { :title => app["label"], :datapoints => datapoints }
     end
