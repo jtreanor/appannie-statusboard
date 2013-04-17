@@ -48,19 +48,33 @@
 
     </style>
     <script>
-        function panicboard_url(email,password,days) {
-          url = $(location).attr('href') + "graph/" + days + "?email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
+        function panicboard_url(email,password,days,acc) {
+          url = $(location).attr('href') + "graph/" + days + "?account_id=" + acc + "&email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
           result = "panicboard://?url=" + encodeURIComponent(url) + "&panel=graph&sourceDisplayName=James%20Treanor";
           return result;
         }
+        function account_id_url(email,password) {
+          url = $(location).attr('href') + "account_id" + "?email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
+          return url
+        }
         function onClick() {
+          $('#modal').modal('show');
+
           email = $('input[id=email]').val();
           password = $('input[id=password]').val();
           days = $('input[id=days]').val();
 
-          panic = panicboard_url(email,password,days);
-
-          window.location =  panic;// redirect
+          url = account_id_url(email,password);
+          $.get(url,function(acc,status){
+            $('#modal').modal('hide');
+            if (acc > 0) {
+              panic = panicboard_url(email,password,days,acc);
+              window.location =  panic;// redirect
+            } else {
+              alert("There was an error checking your account. Please try again.")
+            }
+          });
+          
         }
     </script>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -92,22 +106,46 @@
     <div class="container">
 
       <h1>AppAnnie Statistics For Status Board</h1>
-      <p>Enter you <a href="http://appannie.com/">AppAnnie</a> details in the form below <strong>on your iPad</strong> to add a graph to your Status Board.<br></p>
+      <p>Enter you <a href="http://appannie.com/">AppAnnie</a> details in the form below <strong>on your iPad</strong> to add a graph to your Status Board. An exmaple can be seen below the form.</p>
 
       <form class="form-signin">
         <h2 class="form-signin-heading">Appannie Details</h2>
-        <label><strong>Appannie Email:<strong></label>
-        <input type="text" id="email" class="input-block-level" placeholder="Email address">
-        <label><strong>Appannie Password:<strong></label>
-        <input type="password" id="password" class="input-block-level" placeholder="Password">
-        <label><strong>Number Of Days In Graph:<strong></label>
-        <input type="text" id="days" class="input-block-level" placeholder="Days In Graph">
-        <a onClick="onClick()" class="btn btn-large btn-primary" id="button" type="submit">Add To Statusboard<a/>
+        <label><strong>Appannie Email:</strong></label>
+        <input type="text" id="email" class="input-block-level" placeholder="Email address" />
+        <label><strong>Appannie Password:</strong></label>
+        <input type="password" id="password" class="input-block-level" placeholder="Password" />
+        <label><strong>Number Of Days In Graph:</strong></label>
+        <input type="text" id="days" class="input-block-level" placeholder="Days In Graph" />
+        <a onClick="onClick()" class="btn btn-large btn-primary" id="button" type="submit">Add To Statusboard</a>
       </form>
 
+      <p>Due to the sensitive nature of these credentials I encourage you to deploy your own instance of this. The source is available on <a href="https://github.com/jtreanor/appannie-statusboard">GitHub</a>.</p>
 
+      <div>
+      <h2>Example</h2>
+      <img src="img/graph.png" class="img-polaroid">
+      <p>This is an example using a 30 day time span.</p>
+    </div>
+
+    <footer>Made by <a href="http://twitter.com/jamestreanor">James Treanor</a></footer>
 
     </div> <!-- /container -->
+
+    <!-- Modal -->
+    <div id="modal" class="modal hide fade" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <h3>Creating Graph</h3>
+      </div>
+      <div class="modal-body">
+        <div class="progress progress-striped active">
+          <div class="bar" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <p>Your graph will be ready in a few seconds.</p>
+      </div>
+    </div>
+
 
     <!-- Le javascript
     ================================================== -->

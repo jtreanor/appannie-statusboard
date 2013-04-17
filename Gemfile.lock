@@ -5,6 +5,7 @@ GEM
     curb (0.8.3)
     hirb (0.7.1)
     json (1.7.7)
+    nokogiri (1.5.9)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -22,4 +23,5 @@ DEPENDENCIES
   curb
   hirb
   json
+  nokogiri
   sinatra

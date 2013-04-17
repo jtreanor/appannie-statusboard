@@ -2,7 +2,25 @@ def param_date_format(date)
     date.strftime("%Y-%m-%d")
 end
 
-def appannie_export(daysBack,email,password)
+def string_between_markers string, marker1, marker2
+    string[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
+end
+
+def get_account_id_for_cookie(cookie)
+  http = Curl.get("https://www.appannie.com/care/") do |http|
+      http.headers['Cookie'] = cookie
+  end
+
+  doc = Nokogiri::HTML(http.body_str)
+
+  # Print out each link using a CSS selector
+  doc.css('a.btn').each do |link|
+    that = link['href'].split("account_id=")
+    return that[1].split("&app_id").first
+  end
+end
+
+def appannie_login(email,password)
   c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
                          Curl::PostField.content('username', email),
                          Curl::PostField.content('password', password))
@@ -18,18 +36,23 @@ def appannie_export(daysBack,email,password)
 
   if http_headers['Set-Cookie'].nil?
     puts c.header_str
-    puts email
-    puts password
+    return nil
+  else
+    return http_headers['Set-Cookie']
+  end
+end
 
+def appannie_export(daysBack,email,password,account_id)
+  cookie = appannie_login(email,password)
+
+  if cookie.nil?
     return false
   else
-
-    cookie = http_headers['Set-Cookie'];
 
     now = Time.now - (1*24*60*60);
     prev = Time.now - ((daysBack+1)*24*60*60)
 
-    url = "https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=#{param_date_format(prev)}&e=#{param_date_format(now)}"
+    url = "https://www.appannie.com/sales/units_data/?account_id=#{account_id}&type=units&s=#{param_date_format(prev)}&e=#{param_date_format(now)}"
     puts url
 
 
@@ -46,17 +69,26 @@ def statusboard_graph(datasequences,title)
   { :graph => { :title => "Appannie Stats", :datasequences => datasequences } }
 end
 
-def statusboard_graph_error
+def statusboard_graph_error(message)
   '{
         "graph" : {
         "title" : "Appannie Stats",
         "error" : {
-        "message" : "Something went wrong.",
+        "message" : "' + message + '",
         "detail" : ""
         },
         "datasequences" : [] }}'
 end
 
+get '/account_id' do
+  email = params[:email]
+  password = params[:password]
+
+  cookie = appannie_login(email,password)
+  acc = get_account_id_for_cookie(cookie)
+
+  return acc.to_s
+end
 
 get '/' do
   File.read(File.join('public', 'index.html'))
@@ -66,14 +98,23 @@ end
 get '/graph/:days?' do
   email = params[:email]
   password = params[:password]
+  account_id = params[:account_id]
+
+  puts email
+  puts password
+  puts account_id
+
+  if email.nil? || password.nil? || account_id.nil?
+    return statusboard_graph_error("All params must be set.")
+  end
 
   if !params[:days]
     #default to 7
     params[:days] = 7
   end
-  data = appannie_export(params[:days].to_i,email,password)
+  data = appannie_export(params[:days].to_i,email,password,account_id)
   if ! data.kind_of?(Array)
-    return statusboard_graph_error
+    return statusboard_graph_error("Data export failed.")
   end
 
   datasequences = [];
