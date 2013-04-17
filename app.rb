@@ -1,21 +1,8 @@
 get '/' do
 
-http = Curl.get(params[:url]) do |http|
-  http.headers['User-Agent'] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31"
-  http.headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-  http.headers['Accept-Charset'] = 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'
-  http.headers['Accept-Encoding'] = 'gzip,deflate,sdch'
-  http.headers['Accept-Language'] = 'en-US,en;q=0.8'
-  http.headers['Cache-Control']= 'no-cache'
-  http.headers['Connection'] = 'keep-alive'
-  http.headers['Host'] = 'www.appannie.com'
-  http.headers['Pragma'] = 'no-cache'
-end
-http.header_str
 
-=begin
   c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
-                         Curl::PostField.content('username', 'j.treanor@umail.ucc.ie'),
+                         Curl::PostField.content('username', 'jtreanor3@gmail.com'),
                          Curl::PostField.content('password', '#otdPVJgwUVJ$oJHL8Vr'))
 
 #  echo = c.header_str
@@ -43,8 +30,9 @@ http.header_str
 
     JSON.parse(data.first).each do |app|
       datapoints = []
+      date = Time.at(.first.to_s).to_datetime
       app["data"].each do |d|
-        datapoints << { :title => d.first, :value => d[1]}
+        datapoints << { :title => date.strftime("%a "), :value => d[1]}
       end
       datasequences << { :title => app["label"], :datapoints => datapoints }
     end
@@ -56,8 +44,6 @@ http.header_str
 
 
   end
-
-=end
 
 
 end
