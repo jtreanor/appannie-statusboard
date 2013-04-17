@@ -1,3 +1,7 @@
+def param_format(date)
+    date.strftime("%Y-%m-%e")
+end
+
 get '/' do
 
 
@@ -15,12 +19,24 @@ get '/' do
   http_headers = Hash[http_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
 
   if http_headers['Set-Cookie'].nil?
-    c.header_str
+    puts c.header_str
+
+    '{
+        "graph" : {
+        "title" : "Appannie Stats",
+        "error" : {
+        "message" : "Something went wrong.",
+        "detail" : ""
+        },
+        "datasequences" : [] }'
   else
 
     cookie = http_headers['Set-Cookie'];
 
-    http = Curl.get('https://www.appannie.com/sales/units_data/?account_id=35271&type=units&s=2013-03-04&e=2013-03-12') do |http|
+    now = DateTime.now;
+    lastWeek = Time.now - (8*24*60*60)
+
+    http = Curl.get("https://www.appannie.com/sales/units_data/?account_id=35271&type=units") do |http|
       http.headers['Cookie'] = cookie
     end
 
@@ -30,14 +46,16 @@ get '/' do
 
     JSON.parse(data.first).each do |app|
       datapoints = []
-      date = Time.at(.first.to_s).to_datetime
       app["data"].each do |d|
-        datapoints << { :title => date.strftime("%a "), :value => d[1]}
+        puts d.first.to_s[0..-4]
+        date = DateTime.strptime(d.first.to_s[0..-4],'%s')
+
+        datapoints << { :title => date.strftime("%b %e"), :value => d[1]}
       end
       datasequences << { :title => app["label"], :datapoints => datapoints }
     end
 
-    output = { :graph => { :title => "Appannie Data", :datasequences => datasequences } }
+    output = { :graph => { :title => "Appannie Stats", :datasequences => datasequences } }
 
     output.to_json
 
