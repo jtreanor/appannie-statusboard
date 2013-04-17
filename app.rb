@@ -28,7 +28,7 @@ get '/' do
         "message" : "Something went wrong.",
         "detail" : ""
         },
-        "datasequences" : [] }'
+        "datasequences" : [] }}'
   else
 
     cookie = http_headers['Set-Cookie'];
