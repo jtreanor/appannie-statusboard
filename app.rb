@@ -100,10 +100,6 @@ get '/graph/:days?' do
   password = params[:password]
   account_id = params[:account_id]
 
-  puts email
-  puts password
-  puts account_id
-
   if email.nil? || password.nil? || account_id.nil?
     return statusboard_graph_error("All params must be set.")
   end
