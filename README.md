@@ -8,6 +8,14 @@ Due to the sensitive nature of these credentials I encourage you to deploy your 
 
 This is a work in progress.
 
+##Get Started
+
+1. On your iPad, fill out the form with your AppAnnie credentials and the desired time period.
+2. Tap the button to add it directly to your status board. 
+3. Enjoy! :)
+
+![Form](https://app-stat.eu01.aws.af.cm/img/Form.png)
+
 ##Status Board Examples
 
 ###7 day:
