@@ -8,6 +8,16 @@ Due to the sensitive nature of these credentials I encourage you to deploy your 
 
 This is a work in progress.
 
-Here is a sample in status board using a 30 day time span:
+##Examples
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/graph.png)
+###7 day:
+
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/7Day.png)
+
+###30 day:
+
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/30Day.png)
+
+###180 day:
+
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/180Day.png)
