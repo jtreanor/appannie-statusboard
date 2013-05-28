@@ -53,7 +53,7 @@ def appannie_export(daysBack,email,password,account_id)
     prev = Time.now - ((daysBack+1)*24*60*60)
 
     url = "https://www.appannie.com/sales/units_data/?account_id=#{account_id}&type=units&s=#{param_date_format(prev)}&e=#{param_date_format(now)}"
-    puts url
+    puts "#{Time.now} #{account_id} #{email}"
 
 
     http = Curl.get(url) do |http|
@@ -66,7 +66,7 @@ def appannie_export(daysBack,email,password,account_id)
 end
 
 def statusboard_graph(datasequences,title)
-  { :graph => { :title => "Appannie Stats", :datasequences => datasequences } }
+  { :graph => { :title => title, :datasequences => datasequences } }
 end
 
 def statusboard_graph_error(message)
@@ -123,10 +123,13 @@ get '/graph/:days?' do
 
       datapoints << { :title => date.strftime("%b %e"), :value => d[1]}
     end
+    puts "App Name: #{app["label"]}"
     datasequences << { :title => app["label"], :datapoints => datapoints }
   end
 
-  output = statusboard_graph(datasequences,"Appannie Stats")
+  days = params[:days]
+
+  output = statusboard_graph(datasequences,"Appannie #{days} days")
 
   output.to_json
 
