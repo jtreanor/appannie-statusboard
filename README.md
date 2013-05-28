@@ -8,16 +8,16 @@ Due to the sensitive nature of these credentials I encourage you to deploy your 
 
 This is a work in progress.
 
-##Examples
+##Status Board Examples
 
 ###7 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/7Day.png)
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/7Days.png)
 
 ###30 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/30Day.png)
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/30Days.png)
 
 ###180 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/180Day.png)
+![Status board sample](https://app-stat.eu01.aws.af.cm/img/180Days.png)
