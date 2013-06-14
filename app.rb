@@ -143,7 +143,7 @@ get '/graph/:days?' do
   end
 
   sales_list.each do |app_day|
-    date = DateTime.strptime(app_day['date'])
+    date = DateTime.strptime(app_day['date'],"%Y-%m-%d")
     app_id = app_day['app']
     downloads = app_day['units']['app']['downloads']
 
