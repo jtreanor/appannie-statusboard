@@ -143,7 +143,7 @@ get '/graph/:days?' do
   end
 
   sales_list.each do |app_day|
-    date = app_day['date']
+    date = DateTime.strptime(app_day['date'])
     app_id = app_day['app']
     downloads = app_day['units']['app']['downloads']
 
@@ -151,7 +151,7 @@ get '/graph/:days?' do
       temp_datasequences[app_id] = []
     end
 
-    temp_datasequences[app_id] << { :title => date, :value => downloads}
+    temp_datasequences[app_id] << { :title => date.strftime("%b %e"), :value => downloads}
   end
 
   app_details = appannie_app_details(email,password,account_id)
