@@ -58,10 +58,6 @@ def appannie_export(daysBack,email,password,account_id)
       api_http.headers['Accept'] = 'application/json'
   end
 
-  puts "Url" + url
-  puts "Status: " + api_http.status
-  puts "Headers: " + api_http.headers.to_s
-
   api_http.body_str
 end
 
@@ -106,11 +102,29 @@ get '/account_id' do
 end
 
 get '/' do
+  if base_url.include? "af.cm"
+    url = "https://appannie.herokuapp.com" + request.fullpath
+
+    api_http = Curl.get(url) do |api_http|
+    end
+
+    return api_http.body_str
+  end
+  
   File.read(File.join('public', 'index.html'))
 end
 
 #statusboard graph
 get '/graph/:days?' do
+  if base_url.include? "af.cm"
+    url = "https://appannie.herokuapp.com" + request.fullpath
+
+    api_http = Curl.get(url) do |api_http|
+    end
+
+    return api_http.body_str
+  end
+
   email = params[:email]
   password = params[:password]
   account_id = params[:account_id]
@@ -132,7 +146,6 @@ get '/graph/:days?' do
 
   temp_datasequences = {};
 
-  puts data
 
   parsed = JSON.parse(data)
 
@@ -173,4 +186,8 @@ get '/graph/:days?' do
 
   output.to_json
 
+end
+
+def base_url
+    @base_url ||= "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
 end
