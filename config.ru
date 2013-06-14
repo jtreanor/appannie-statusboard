@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'open-uri'
+require 'base64'
 
 Bundler.require
 

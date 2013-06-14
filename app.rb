@@ -42,27 +42,25 @@ def appannie_login(email,password)
   end
 end
 
+def appannie_api_token(email,password)
+  return "Basic " + Base64.encode64("#{email}:#{password}")
+end
+
 def appannie_export(daysBack,email,password,account_id)
-  cookie = appannie_login(email,password)
+  now = Time.now - (1*24*60*60);
+  prev = Time.now - ((daysBack+1)*24*60*60)
 
-  if cookie.nil?
-    return false
-  else
+  token = appannie_api_token(email,password)
+  url = "https://api.appannie.com/v1/accounts/#{account_id}/sales?start_date=#{param_date_format(prev)}&end_date=#{param_date_format(now)}&currency=USD&break_down=application%2Bdate"
 
-    now = Time.now - (1*24*60*60);
-    prev = Time.now - ((daysBack+1)*24*60*60)
-
-    url = "https://www.appannie.com/sales/units_data/?account_id=#{account_id}&type=units&s=#{param_date_format(prev)}&e=#{param_date_format(now)}"
-    puts "#{Time.now} #{account_id} #{email}"
-
-
-    http = Curl.get(url) do |http|
-      http.headers['Cookie'] = cookie
-    end
-
-    http.body_str.split("--end-data--")
+  api_http = Curl.get(url) do |api_http|
+      api_http.headers['Authorization'] = token
+      api_http.headers['Accept'] = 'application/json'
   end
 
+  puts "Status: " + api_http.status
+
+  api_http.body_str
 end
 
 def statusboard_graph(datasequences,title)
@@ -109,22 +107,38 @@ get '/graph/:days?' do
     params[:days] = 7
   end
   data = appannie_export(params[:days].to_i,email,password,account_id)
-  if ! data.kind_of?(Array)
-    return statusboard_graph_error("Data export failed.")
+  if data.nil? 
+    return statusboard_graph_error("Data export error.")
   end
 
   datasequences = [];
 
-  #The first is the json data
-  JSON.parse(data.first).each do |app|
-    datapoints = []
-    app["data"].each do |d|
-      date = DateTime.strptime(d.first.to_s[0..-4],'%s')
+  temp_datasequences = {};
 
-      datapoints << { :title => date.strftime("%b %e"), :value => d[1]}
+  puts data
+
+  parsed = JSON.parse(data)
+
+  sales_list = parsed['sales_list']
+
+  if sales_list.nil? 
+    return statusboard_graph_error("Data parse error.")
+  end
+
+  sales_list.each do |app_day|
+    date = app_day['date']
+    app_id = app_day['app']
+    downloads = app_day['units']['app']['downloads']
+
+    if temp_datasequences[app_id].nil?
+      temp_datasequences[app_id] = []
     end
-    puts "App Name: #{app["label"]}"
-    datasequences << { :title => app["label"], :datapoints => datapoints }
+
+    temp_datasequences[app_id] << { :title => date, :value => downloads}
+  end
+
+  temp_datasequences.each do |id,app|
+    datasequences << {:title => id, :datapoints => app}
   end
 
   days = params[:days]
