@@ -58,7 +58,22 @@ def appannie_export(daysBack,email,password,account_id)
       api_http.headers['Accept'] = 'application/json'
   end
 
+  puts "Url" + url
   puts "Status: " + api_http.status
+  puts "Headers: " + api_http.headers.to_s
+
+  api_http.body_str
+end
+
+def appannie_app_details(email,password,account_id)
+ token = appannie_api_token(email,password)
+
+  url = "https://api.appannie.com/v1/accounts/#{account_id}/apps"
+
+  api_http = Curl.get(url) do |api_http|
+      api_http.headers['Authorization'] = token
+      api_http.headers['Accept'] = 'application/json'
+  end
 
   api_http.body_str
 end
@@ -77,6 +92,8 @@ def statusboard_graph_error(message)
         },
         "datasequences" : [] }}'
 end
+
+
 
 get '/account_id' do
   email = params[:email]
@@ -137,8 +154,17 @@ get '/graph/:days?' do
     temp_datasequences[app_id] << { :title => date, :value => downloads}
   end
 
+  app_details = appannie_app_details(email,password,account_id)
+
+  apps = {}
+
+
+  JSON.parse(app_details)["app_list"].each do |curr_app|
+    apps[curr_app['app_id']] = curr_app['app_name']
+  end
+
   temp_datasequences.each do |id,app|
-    datasequences << {:title => id, :datapoints => app}
+    datasequences << {:title => apps[id], :datapoints => app}
   end
 
   days = params[:days]
