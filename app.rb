@@ -6,14 +6,19 @@ def appannie_api_token(email,password)
   return "Basic " + Base64.encode64("#{email}:#{password}")
 end
 
-def appannie_export(daysBack,email,password,account_id)
+def appannie_export_with_token(daysBack,token,account_id)
   now = Time.now - (1*24*60*60);
   prev = Time.now - ((daysBack+1)*24*60*60)
 
-  token = appannie_api_token(email,password)
   url = "https://api.appannie.com/v1/accounts/#{account_id}/sales?start_date=#{param_date_format(prev)}&end_date=#{param_date_format(now)}&currency=USD&break_down=application%2Bdate"
 
   appannie_api_request(url,token)
+end
+
+def appannie_export_with_credentials(daysBack,email,password,account_id)
+  token = appannie_api_token(email,password)
+
+  appannie_export_with_token(daysBack,token,account_id)
 end
 
 def appannie_app_details(email,password,account_id)
@@ -72,9 +77,10 @@ end
 get '/graph/:days?' do
   email = params[:email]
   password = params[:password]
+  token  = params[:token]
   account_id = params[:account_id]
 
-  if email.nil? || password.nil? || account_id.nil?
+  if ((email.nil? || password.nil?) || (token.nil?)) || account_id.nil?
     return statusboard_graph_error("All params must be set.")
   end
 
@@ -82,7 +88,15 @@ get '/graph/:days?' do
     #default to 7
     params[:days] = 7
   end
-  data = appannie_export(params[:days].to_i,email,password,account_id)
+
+  data = nil
+
+  if (!token.nil?) {
+    data = appannie_export_with_token(params[:days].to_i,token,account_id)
+  } else {
+    data = appannie_export_with_credentials(params[:days].to_i,email,password,account_id)
+  }
+
   if data.nil? 
     return statusboard_graph_error("Data export error.")
   end
