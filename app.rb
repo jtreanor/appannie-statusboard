@@ -147,7 +147,9 @@ get '/graph/:days?' do
   temp_datasequences.each do |id,app|
     app.sort_by { |hsh| hsh[:title] }
 
-    app[:title] = app[:title].strftime("%b %e")
+    app.each do |t|
+      t[:title] = t[:title].strftime("%b %e")
+    end
 
     datasequences << {:title => apps[id], :datapoints => app}
   end
