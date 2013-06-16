@@ -91,8 +91,10 @@ get '/graph/:days?' do
   token  = params[:token]
   account_id = params[:account_id]
 
-  if ((email.nil? || password.nil?) || (token.nil?)) || account_id.nil?
-    return statusboard_graph_error("All params must be set.")
+
+
+  if account_id.nil?
+    return statusboard_graph_error("Account id must be provided")
   end
 
   if !params[:days]
