@@ -20,12 +20,12 @@ This is a work in progress.
 
 ###7 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/7Days.png)
+![Status board sample](https://appannie.herokuapp.com/img/7Days.png)
 
 ###30 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/30Days.png)
+![Status board sample](https://appannie.herokuapp.com/img/30Days.png)
 
 ###180 day:
 
-![Status board sample](https://app-stat.eu01.aws.af.cm/img/180Days.png)
+![Status board sample](https://appannie.herokuapp.com/img/180Days.png)
