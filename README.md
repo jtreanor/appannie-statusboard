@@ -2,9 +2,9 @@
 
 This is a simple Sinatra app which allows any users of AppAnnie to add graphs of app downloads to their Panic status board.
 
-A deployed version is available here: https://app-stat.eu01.aws.af.cm/.
+A deployed version is available here: https://appannie.herokuapp.com/.
 
-Due to the sensitive nature of these credentials I encourage you to deploy your own instance of this. I highly recommend AppFog for this.
+Due to the sensitive nature of these credentials I encourage you to deploy your own instance of this. I highly recommend Heroku for this.
 
 This is a work in progress.
 
@@ -14,7 +14,7 @@ This is a work in progress.
 2. Tap the button to add it directly to your status board. 
 3. Enjoy! :)
 
-![Form](https://app-stat.eu01.aws.af.cm/img/Form.png)
+![Form](https://appannie.herokuapp.com/img/Form.png)
 
 ##Status Board Examples
 
