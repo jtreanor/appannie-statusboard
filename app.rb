@@ -22,7 +22,6 @@ def appannie_export_with_credentials(daysBack,email,password,account_id)
 end
 
 def appannie_app_details(token,account_id)
-
   url = "https://api.appannie.com/v1/accounts/#{account_id}/apps"
 
   appannie_api_request(url,token)
@@ -151,7 +150,7 @@ get '/graph/:days?' do
 
   days = params[:days]
 
-  output = statusboard_graph(datasequences,"Appannie #{days} days")
+  output = statusboard_graph(datasequences,"Appannie units #{days} days")
 
   output.to_json
 
