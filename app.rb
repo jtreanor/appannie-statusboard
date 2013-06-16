@@ -151,7 +151,7 @@ get '/graph/:days?' do
       t[:title] = t[:title].strftime("%b %e")
     end
 
-    datasequences << {:title => apps[id], :datapoints => app}
+    datasequences << {:title => apps[id], :datapoints => app.reverse}
   end
 
   days = params[:days]
