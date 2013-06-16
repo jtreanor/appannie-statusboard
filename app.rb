@@ -2,46 +2,6 @@ def param_date_format(date)
     date.strftime("%Y-%m-%d")
 end
 
-def string_between_markers string, marker1, marker2
-    string[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
-end
-
-def get_account_id_for_cookie(cookie)
-  http = Curl.get("https://www.appannie.com/care/") do |http|
-      http.headers['Cookie'] = cookie
-  end
-
-  doc = Nokogiri::HTML(http.body_str)
-
-  # Print out each link using a CSS selector
-  doc.css('a.btn').each do |link|
-    that = link['href'].split("account_id=")
-    return that[1].split("&app_id").first
-  end
-end
-
-def appannie_login(email,password)
-  c = Curl::Easy.http_post("https://www.appannie.com/account/login/",
-                         Curl::PostField.content('username', email),
-                         Curl::PostField.content('password', password))
-
-#  echo = c.header_str
-
-  #Remove the last header. This is a cookie we don't need.
-  headers = c.header_str.split(/[\r\n]+/)
-  headers.delete_at(headers.length-1)
-
-  http_response, *http_headers = headers.map(&:strip)
-  http_headers = Hash[http_headers.flat_map{ |s| s.scan(/^(\S+): (.+)/) }]
-
-  if http_headers['Set-Cookie'].nil?
-    puts c.header_str
-    return nil
-  else
-    return http_headers['Set-Cookie']
-  end
-end
-
 def appannie_api_token(email,password)
   return "Basic " + Base64.encode64("#{email}:#{password}")
 end
@@ -101,15 +61,6 @@ def get_account_id_for_token(token)
 end
 
 get '/account_id' do
-  if base_url.include? "af.cm"
-    url = "https://appannie.herokuapp.com" + request.fullpath
-
-    api_http = Curl.get(url) do |api_http|
-    end
-
-    return api_http.body_str
-  end
-
   email = params[:email]
   password = params[:password]
 
@@ -120,29 +71,11 @@ get '/account_id' do
 end
 
 get '/' do
-  if base_url.include? "af.cm"
-    url = "https://appannie.herokuapp.com" + request.fullpath
-
-    api_http = Curl.get(url) do |api_http|
-    end
-
-    return api_http.body_str
-  end
-
   File.read(File.join('public', 'index.html'))
 end
 
 #statusboard graph
 get '/graph/:days?' do
-  if base_url.include? "af.cm"
-    url = "https://appannie.herokuapp.com" + request.fullpath
-
-    api_http = Curl.get(url) do |api_http|
-    end
-
-    return api_http.body_str
-  end
-
   email = params[:email]
   password = params[:password]
   account_id = params[:account_id]
