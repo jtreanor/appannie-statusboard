@@ -13,12 +13,7 @@ def appannie_export(daysBack,email,password,account_id)
   token = appannie_api_token(email,password)
   url = "https://api.appannie.com/v1/accounts/#{account_id}/sales?start_date=#{param_date_format(prev)}&end_date=#{param_date_format(now)}&currency=USD&break_down=application%2Bdate"
 
-  api_http = Curl.get(url) do |api_http|
-      api_http.headers['Authorization'] = token
-      api_http.headers['Accept'] = 'application/json'
-  end
-
-  api_http.body_str
+  appannie_api_request(url,token)
 end
 
 def appannie_app_details(email,password,account_id)
@@ -26,12 +21,7 @@ def appannie_app_details(email,password,account_id)
 
   url = "https://api.appannie.com/v1/accounts/#{account_id}/apps"
 
-  api_http = Curl.get(url) do |api_http|
-      api_http.headers['Authorization'] = token
-      api_http.headers['Accept'] = 'application/json'
-  end
-
-  api_http.body_str
+  appannie_api_request(url,token)
 end
 
 def statusboard_graph(datasequences,title)
@@ -50,6 +40,10 @@ def statusboard_graph_error(message)
 end
 
 def get_account_id_for_token(token)
+  JSON.parse(appannie_api_request(url,token))['account_list'].first['account_id']
+end
+
+def appannie_api_request(url,token)
   url = "https://api.appannie.com/v1/accounts"
 
   api_http = Curl.get(url) do |api_http|
@@ -57,7 +51,7 @@ def get_account_id_for_token(token)
       api_http.headers['Accept'] = 'application/json'
   end
 
-  JSON.parse(api_http.body_str)['account_list'].first['account_id']
+  api_http.body_str
 end
 
 get '/account_id' do
@@ -96,7 +90,6 @@ get '/graph/:days?' do
   datasequences = [];
 
   temp_datasequences = {};
-
 
   parsed = JSON.parse(data)
 
@@ -137,8 +130,4 @@ get '/graph/:days?' do
 
   output.to_json
 
-end
-
-def base_url
-    @base_url ||= "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
 end
