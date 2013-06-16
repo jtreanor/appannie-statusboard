@@ -155,3 +155,38 @@ get '/graph/:days?' do
   output.to_json
 
 end
+
+#statusboard graph
+get '/rank/:days?' do
+  email = params[:email]
+  password = params[:password]
+  token  = params[:token]
+  account_id = params[:account_id]
+  app_id = params[:app_id]
+
+  if token.nil?
+    token = appannie_api_token(email,password)
+  end
+
+  puts "Account ID: " + account_id
+  puts "Token: " + token
+
+  if account_id.nil?
+    return statusboard_graph_error("Account id must be provided")
+  end
+
+  if !params[:days]
+    #default to 7
+    params[:days] = 7
+  end
+
+  url = 'https://api.appannie.com/v1/accounts/#{account_id}/apps/{app_id}/ranks?start_date=#{param_date_format(prev)}&end_date=#{param_date_format(now)}'
+  data = appannie_api_request(url,token)
+
+  data
+
+  if data.nil?
+    return statusboard_graph_error("Data export error.")
+  end
+
+end
