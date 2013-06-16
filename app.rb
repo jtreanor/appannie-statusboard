@@ -92,7 +92,7 @@ get '/graph/:days?' do
     token = appannie_api_token(email,password)
   end
 
-  puts "Account ID: " account_id
+  puts "Account ID: " + account_id
   puts "Token: " + token
 
   if account_id.nil?
