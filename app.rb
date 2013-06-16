@@ -132,7 +132,7 @@ get '/graph/:days?' do
       temp_datasequences[app_id] = []
     end
 
-    temp_datasequences[app_id] << { :title => date.strftime("%b %e"), :value => downloads}
+    temp_datasequences[app_id] << { :title => date, :value => downloads}
   end
 
   app_details = appannie_app_details(token,account_id)
@@ -145,6 +145,10 @@ get '/graph/:days?' do
   end
 
   temp_datasequences.each do |id,app|
+    app.sort_by { |hsh| hsh[:title] }
+
+    app[:title] = app[:title].strftime("%b %e")
+
     datasequences << {:title => apps[id], :datapoints => app}
   end
 
