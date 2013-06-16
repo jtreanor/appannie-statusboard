@@ -47,13 +47,16 @@
     </style>
     <script>
         function panicboard_url(email,password,days,acc) {
-          url = $(location).attr('href') + "graph/" + days + "?account_id=" + acc + "&email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
+          url = $(location).attr('href') + "graph/" + days + "?account_id=" + acc + "&token=" + encodeURIComponent(api_token(email,password));
           result = "panicboard://?url=" + encodeURIComponent(url) + "&panel=graph&sourceDisplayName=James%20Treanor";
           return result;
         }
         function account_id_url(email,password) {
-          url = $(location).attr('href') + "account_id" + "?email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
+          url = $(location).attr('href') + "account_id" + "?token=" + encodeURIComponent(api_token(email,password));
           return url
+        }
+        function api_token(email,password) {
+          return "Basic " + $.base64.encode(email + ":" + password);  
         }
         function onClick() {
           $('#modal').modal('show');
@@ -165,6 +168,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
+    <script src='js/jquery.base64.js' type='text/javascript'></script>
     <script src="js/bootstrap.js"></script>
 
   </body>

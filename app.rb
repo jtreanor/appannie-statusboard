@@ -45,7 +45,21 @@ def statusboard_graph_error(message)
 end
 
 def get_account_id_for_token(token)
-  JSON.parse(appannie_api_request(url,token))['account_list'].first['account_id']
+  url = 'https://api.appannie.com/v1/accounts'
+
+  account_response = JSON.parse(appannie_api_request(url,token))
+
+  if account_response.nil?
+    return 0
+  elsif account_response['account_list'].nil?
+    return -3
+  elsif account_response['account_list'].size <= 0
+    return -1
+  elsif account_response['account_list'].first['account_id'].nil?
+    return -2
+  end
+  
+  account_response['account_list'].first['account_id']
 end
 
 def appannie_api_request(url,token)
@@ -60,10 +74,7 @@ def appannie_api_request(url,token)
 end
 
 get '/account_id' do
-  email = params[:email]
-  password = params[:password]
-
-  token = appannie_api_token(email,password)
+  token = params[:token]
   acc = get_account_id_for_token(token)
 
   return acc.to_s
@@ -91,13 +102,13 @@ get '/graph/:days?' do
 
   data = nil
 
-  if (!token.nil?) {
+  if !token.nil?
     data = appannie_export_with_token(params[:days].to_i,token,account_id)
-  } else {
+  else
     data = appannie_export_with_credentials(params[:days].to_i,email,password,account_id)
-  }
+  end
 
-  if data.nil? 
+  if data.nil?
     return statusboard_graph_error("Data export error.")
   end
 
