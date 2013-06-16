@@ -62,7 +62,7 @@ def appannie_export(daysBack,email,password,account_id)
 end
 
 def appannie_app_details(email,password,account_id)
- token = appannie_api_token(email,password)
+  token = appannie_api_token(email,password)
 
   url = "https://api.appannie.com/v1/accounts/#{account_id}/apps"
 
@@ -89,14 +89,32 @@ def statusboard_graph_error(message)
         "datasequences" : [] }}'
 end
 
+def get_account_id_for_token(token)
+  url = "https://api.appannie.com/v1/accounts"
 
+  api_http = Curl.get(url) do |api_http|
+      api_http.headers['Authorization'] = token
+      api_http.headers['Accept'] = 'application/json'
+  end
+
+  JSON.parse(api_http.body_str)['account_list'].first['account_id']
+end
 
 get '/account_id' do
+  if base_url.include? "af.cm"
+    url = "https://appannie.herokuapp.com" + request.fullpath
+
+    api_http = Curl.get(url) do |api_http|
+    end
+
+    return api_http.body_str
+  end
+
   email = params[:email]
   password = params[:password]
 
-  cookie = appannie_login(email,password)
-  acc = get_account_id_for_cookie(cookie)
+  token = appannie_api_token(email,password)
+  acc = get_account_id_for_token(token)
 
   return acc.to_s
 end
@@ -110,7 +128,7 @@ get '/' do
 
     return api_http.body_str
   end
-  
+
   File.read(File.join('public', 'index.html'))
 end
 
