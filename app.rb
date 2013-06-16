@@ -21,8 +21,7 @@ def appannie_export_with_credentials(daysBack,email,password,account_id)
   appannie_export_with_token(daysBack,token,account_id)
 end
 
-def appannie_app_details(email,password,account_id)
-  token = appannie_api_token(email,password)
+def appannie_app_details(token,account_id)
 
   url = "https://api.appannie.com/v1/accounts/#{account_id}/apps"
 
@@ -63,8 +62,6 @@ def get_account_id_for_token(token)
 end
 
 def appannie_api_request(url,token)
-  url = "https://api.appannie.com/v1/accounts"
-
   api_http = Curl.get(url) do |api_http|
       api_http.headers['Authorization'] = token
       api_http.headers['Accept'] = 'application/json'
@@ -91,7 +88,9 @@ get '/graph/:days?' do
   token  = params[:token]
   account_id = params[:account_id]
 
-
+  if token.nil?
+    token = appannie_api_token(email,password)
+  end
 
   if account_id.nil?
     return statusboard_graph_error("Account id must be provided")
@@ -102,13 +101,9 @@ get '/graph/:days?' do
     params[:days] = 7
   end
 
-  data = nil
+  data = appannie_export_with_token(params[:days].to_i,token,account_id)
 
-  if !token.nil?
-    data = appannie_export_with_token(params[:days].to_i,token,account_id)
-  else
-    data = appannie_export_with_credentials(params[:days].to_i,email,password,account_id)
-  end
+  puts data
 
   if data.nil?
     return statusboard_graph_error("Data export error.")
@@ -138,7 +133,7 @@ get '/graph/:days?' do
     temp_datasequences[app_id] << { :title => date.strftime("%b %e"), :value => downloads}
   end
 
-  app_details = appannie_app_details(email,password,account_id)
+  app_details = appannie_app_details(token,account_id)
 
   apps = {}
 

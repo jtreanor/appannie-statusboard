@@ -70,6 +70,7 @@
             $('#modal').modal('hide');
             if (acc > 0) {
               panic = panicboard_url(email,password,days,acc);
+              alert(panic)
               window.location =  panic;// redirect
             } else {
               alert("There was an error checking your account. Please try again.")
